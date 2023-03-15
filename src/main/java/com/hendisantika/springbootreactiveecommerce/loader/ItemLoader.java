@@ -1,6 +1,7 @@
 package com.hendisantika.springbootreactiveecommerce.loader;
 
 import com.hendisantika.springbootreactiveecommerce.entity.Item;
+import com.hendisantika.springbootreactiveecommerce.repository.ItemRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
