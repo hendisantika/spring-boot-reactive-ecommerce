@@ -9,7 +9,10 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.springframework.amqp.core.Binding.DestinationType.EXCHANGE;
+import static com.hendisantika.springbootreactiveecommerce.constans.MessageConstants.EXCHANGE;
+import static com.hendisantika.springbootreactiveecommerce.constans.MessageConstants.QUEUE;
+import static com.hendisantika.springbootreactiveecommerce.constans.MessageConstants.ROUTING_KEY;
+
 
 /**
  * Created by IntelliJ IDEA.
