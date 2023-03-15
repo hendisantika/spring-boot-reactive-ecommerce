@@ -1,9 +1,11 @@
 package com.hendisantika.springbootreactiveecommerce.service;
 
+import com.hendisantika.springbootreactiveecommerce.entity.Item;
 import com.hendisantika.springbootreactiveecommerce.repository.CartRepository;
 import com.hendisantika.springbootreactiveecommerce.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,4 +23,9 @@ public class CartService {
 
     private final ItemRepository itemRepository;
     private final CartRepository cartRepository;
+
+    public Flux<Item> getItems() {
+        return itemRepository.findAll();
+    }
+
 }
