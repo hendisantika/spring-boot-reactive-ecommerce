@@ -1,11 +1,15 @@
 package com.hendisantika.springbootreactiveecommerce.controller;
 
+import com.hendisantika.springbootreactiveecommerce.entity.Cart;
 import com.hendisantika.springbootreactiveecommerce.entity.Item;
 import com.hendisantika.springbootreactiveecommerce.service.CartService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
  * Created by IntelliJ IDEA.
@@ -32,4 +36,10 @@ public class HomeController {
     Flux<Item> search(String name, Double price, boolean useAnd) {
         return cartService.searchItems(name, price == null ? 0.0 : price, useAnd);
     }
+
+    @GetMapping("/cart")
+    Mono<Cart> cart(@AuthenticationPrincipal UserDetails userDetails) {
+        return cartService.getCart(cartName(userDetails));
+    }
+
 }
