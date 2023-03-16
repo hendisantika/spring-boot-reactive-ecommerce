@@ -9,3 +9,12 @@ services:
       - 15672:15672
     volumes:
       - data:/var/lib/rabbitmq
+  mongodb:
+    image: mongo:5.0.15
+    ports:
+      - 27017:27017
+    volumes:
+      - ~/apps/mongo:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=citizix
+      - MONGO_INITDB_ROOT_PASSWORD=S3cret
