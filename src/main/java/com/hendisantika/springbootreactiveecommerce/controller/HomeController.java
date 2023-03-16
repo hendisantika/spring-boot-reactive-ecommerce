@@ -48,4 +48,8 @@ public class HomeController {
     Mono<Cart> addToCart(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String id) {
         return cartService.addItemToCart(cartName(userDetails), id);
     }
+
+    private String cartName(UserDetails userDetails) {
+        return userDetails.getUsername() + "'s Cart";
+    }
 }
