@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -42,4 +44,8 @@ public class HomeController {
         return cartService.getCart(cartName(userDetails));
     }
 
+    @PostMapping("/cart/add/{id}")
+    Mono<Cart> addToCart(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String id) {
+        return cartService.addItemToCart(cartName(userDetails), id);
+    }
 }
