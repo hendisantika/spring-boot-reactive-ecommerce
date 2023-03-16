@@ -6,8 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Example;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.test.StepVerifier;
 
 /**
  * Created by IntelliJ IDEA.
@@ -38,5 +40,22 @@ public class SecurityIT {
                 .exchange()
                 .expectStatus()
                 .isForbidden();
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "INVENTORY")
+    void addingItem_withProperRole_returnsCreated() {
+        Item item = new Item("iPhone", 999.87);
+        client.post()
+                .uri("/amqp/items/add")
+                .bodyValue(item)
+                .exchange()
+                .expectStatus()
+                .isCreated();
+
+        itemRepository.findAll(Example.of(item))
+                .as(StepVerifier::create)
+                .expectNextCount(1)
+                .verifyComplete();
     }
 }
