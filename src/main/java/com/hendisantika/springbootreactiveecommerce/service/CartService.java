@@ -6,6 +6,8 @@ import com.hendisantika.springbootreactiveecommerce.entity.Item;
 import com.hendisantika.springbootreactiveecommerce.repository.CartRepository;
 import com.hendisantika.springbootreactiveecommerce.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -57,5 +59,18 @@ public class CartService {
                             });
                 })
                 .flatMap(cartRepository::save);
+    }
+
+    public Flux<Item> searchItems(String name, double price, boolean useAnd) {
+        Item item = new Item(name, price);
+
+        ExampleMatcher matcher = useAnd ? ExampleMatcher.matchingAll() : ExampleMatcher.matchingAny();
+        matcher = matcher
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING)
+                .withIgnoreCase()
+                .withMatcher("price", ExampleMatcher.GenericPropertyMatchers.exact());
+        Example<Item> probe = Example.of(item, matcher);
+
+        return itemRepository.findAll(probe);
     }
 }
