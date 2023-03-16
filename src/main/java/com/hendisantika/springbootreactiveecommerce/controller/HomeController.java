@@ -27,4 +27,9 @@ public class HomeController {
     Flux<Item> items() {
         return cartService.getItems();
     }
+
+    @GetMapping("/items/search")
+    Flux<Item> search(String name, Double price, boolean useAnd) {
+        return cartService.searchItems(name, price == null ? 0.0 : price, useAnd);
+    }
 }
