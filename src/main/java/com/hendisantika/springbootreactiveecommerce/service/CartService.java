@@ -1,11 +1,13 @@
 package com.hendisantika.springbootreactiveecommerce.service;
 
+import com.hendisantika.springbootreactiveecommerce.entity.Cart;
 import com.hendisantika.springbootreactiveecommerce.entity.Item;
 import com.hendisantika.springbootreactiveecommerce.repository.CartRepository;
 import com.hendisantika.springbootreactiveecommerce.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,4 +30,8 @@ public class CartService {
         return itemRepository.findAll();
     }
 
+    public Mono<Cart> getCart(String cartName) {
+        return cartRepository.findById(cartName)
+                .defaultIfEmpty(new Cart(cartName));
+    }
 }
