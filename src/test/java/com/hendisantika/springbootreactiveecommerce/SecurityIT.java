@@ -1,9 +1,12 @@
 package com.hendisantika.springbootreactiveecommerce;
 
+import com.hendisantika.springbootreactiveecommerce.entity.Item;
 import com.hendisantika.springbootreactiveecommerce.repository.ItemRepository;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
@@ -25,4 +28,15 @@ public class SecurityIT {
 
     @Autowired
     ItemRepository itemRepository;
+
+    @Test
+    @WithMockUser(username = "jay")
+    void addingItem_withoutProperRole_returnsForbidden() {
+        client.post()
+                .uri("/amqp/items/add")
+                .bodyValue(new Item("iPhone", 999.87))
+                .exchange()
+                .expectStatus()
+                .isForbidden();
+    }
 }
