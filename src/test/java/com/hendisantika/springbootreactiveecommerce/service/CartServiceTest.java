@@ -1,10 +1,17 @@
 package com.hendisantika.springbootreactiveecommerce.service;
 
+import com.hendisantika.springbootreactiveecommerce.entity.Item;
 import com.hendisantika.springbootreactiveecommerce.repository.CartRepository;
 import com.hendisantika.springbootreactiveecommerce.repository.ItemRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Flux;
+import reactor.test.StepVerifier;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,6 +33,20 @@ class CartServiceTest {
         mockItemRepository = mock(ItemRepository.class);
         mockCartRepository = mock(CartRepository.class);
         cartService = new CartService(mockItemRepository, mockCartRepository);
+    }
+
+    @Test
+    void getItems_returnsItems() {
+        when(mockItemRepository.findAll())
+                .thenReturn(Flux.just(new Item("alarm clock", 19.99)));
+
+        cartService.getItems()
+                .as(StepVerifier::create)
+                .assertNext(item -> {
+                    assertThat(item.getName(), equalTo("alarm clock"));
+                    assertThat(item.getPrice(), equalTo(19.99));
+                })
+                .verifyComplete();
     }
 
 }
