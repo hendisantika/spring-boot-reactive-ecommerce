@@ -16,7 +16,7 @@ import reactor.test.StepVerifier;
  * To change this template use File | Settings | File Templates.
  */
 @DataMongoTest(properties = {"spring.mongodb.embedded.version=5.0.15"})
-class ItemRepositoryTests {
+class ItemRepositoryTest {
 
     @Autowired
     ItemRepository itemRepository;
