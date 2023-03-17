@@ -11,6 +11,7 @@ import reactor.test.StepVerifier;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -47,6 +48,17 @@ class CartServiceTest {
                     assertThat(item.getPrice(), equalTo(19.99));
                 })
                 .verifyComplete();
+    }
+
+    @Test
+    void getItems_callsRepository() {
+        when(mockItemRepository.findAll())
+                .thenReturn(Flux.empty());
+
+        StepVerifier.create(cartService.getItems())
+                .verifyComplete();
+
+        verify(mockItemRepository).findAll();
     }
 
 }
