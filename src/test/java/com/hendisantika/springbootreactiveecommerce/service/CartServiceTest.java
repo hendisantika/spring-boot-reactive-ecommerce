@@ -1,15 +1,21 @@
 package com.hendisantika.springbootreactiveecommerce.service;
 
+import com.hendisantika.springbootreactiveecommerce.entity.Cart;
+import com.hendisantika.springbootreactiveecommerce.entity.CartItem;
 import com.hendisantika.springbootreactiveecommerce.entity.Item;
 import com.hendisantika.springbootreactiveecommerce.repository.CartRepository;
 import com.hendisantika.springbootreactiveecommerce.repository.ItemRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -61,4 +67,30 @@ class CartServiceTest {
         verify(mockItemRepository).findAll();
     }
 
+    @Test
+    void addItemToCart_onEmptyCart_returnsOneCartItem() {
+        Item alarmClock = new Item("alarm clock", 19.99);
+        when(mockItemRepository.findById("item id"))
+                .thenReturn(Mono.just(alarmClock));
+
+        when(mockCartRepository.findById("My cart"))
+                .thenReturn(Mono.empty());
+
+        Cart sampleCart = new Cart("My cart");
+        sampleCart.setCartItems(List.of(new CartItem(alarmClock)));
+        when(mockCartRepository.save(any(Cart.class)))
+                .thenReturn(Mono.just(sampleCart));
+
+        cartService.addItemToCart("My cart", "item id")
+                .as(StepVerifier::create)
+                .assertNext(cart -> {
+                    List<CartItem> cartItems = cart.getCartItems();
+                    assertThat(cartItems.size(), equalTo(1));
+                    assertThat(cartItems.get(0).getQuantity(), equalTo(1));
+                    Item item = cartItems.get(0).getItem();
+                    assertThat(item.getName(), equalTo("alarm clock"));
+                    assertThat(item.getPrice(), equalTo(19.99));
+                })
+                .verifyComplete();
+    }
 }
