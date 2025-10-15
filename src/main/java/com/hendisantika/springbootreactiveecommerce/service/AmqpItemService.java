@@ -3,7 +3,6 @@ package com.hendisantika.springbootreactiveecommerce.service;
 import com.hendisantika.springbootreactiveecommerce.constans.MessageConstants;
 import com.hendisantika.springbootreactiveecommerce.entity.Item;
 import com.hendisantika.springbootreactiveecommerce.repository.ItemRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -19,10 +18,13 @@ import reactor.core.publisher.Mono;
  * To change this template use File | Settings | File Templates.
  */
 @Service
-@RequiredArgsConstructor
 public class AmqpItemService {
 
     private final ItemRepository itemRepository;
+
+    public AmqpItemService(ItemRepository itemRepository) {
+        this.itemRepository = itemRepository;
+    }
 
     @RabbitListener(
             ackMode = "MANUAL",

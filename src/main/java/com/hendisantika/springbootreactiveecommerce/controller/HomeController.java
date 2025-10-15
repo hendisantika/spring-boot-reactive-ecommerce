@@ -3,7 +3,6 @@ package com.hendisantika.springbootreactiveecommerce.controller;
 import com.hendisantika.springbootreactiveecommerce.entity.Cart;
 import com.hendisantika.springbootreactiveecommerce.entity.Item;
 import com.hendisantika.springbootreactiveecommerce.service.CartService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,10 +23,13 @@ import reactor.core.publisher.Mono;
  * To change this template use File | Settings | File Templates.
  */
 @RestController
-@RequiredArgsConstructor
 public class HomeController {
 
     private final CartService cartService;
+
+    public HomeController(CartService cartService) {
+        this.cartService = cartService;
+    }
 
     @GetMapping("/items")
     Flux<Item> items() {

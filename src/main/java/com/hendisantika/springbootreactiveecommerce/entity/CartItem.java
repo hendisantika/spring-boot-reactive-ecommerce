@@ -26,4 +26,12 @@ public class CartItem {
     public void increment() {
         this.quantity += 1;
     }
+
+    public Item getItem() {
+        return this.item;
+    }
+
+    public int getQuantity() {
+        return this.quantity;
+    }
 }

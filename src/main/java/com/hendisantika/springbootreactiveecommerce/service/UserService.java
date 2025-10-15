@@ -1,7 +1,6 @@
 package com.hendisantika.springbootreactiveecommerce.service;
 
 import com.hendisantika.springbootreactiveecommerce.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,10 +18,13 @@ import reactor.core.publisher.Mono;
  * To change this template use File | Settings | File Templates.
  */
 @Service
-@RequiredArgsConstructor
 public class UserService implements ReactiveUserDetailsService {
 
     private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public Mono<UserDetails> findByUsername(String username) {

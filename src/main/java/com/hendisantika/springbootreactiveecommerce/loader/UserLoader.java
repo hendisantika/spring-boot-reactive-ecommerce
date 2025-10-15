@@ -30,16 +30,15 @@ public class UserLoader {
                     .flatMap(userRepository::delete)
                     .blockLast();
 
-            User user = User.builder()
-                    .name("jay")
-                    .password(passwordEncoder.encode("jay"))
-                    .roles(List.of("ROLE_USER"))
-                    .build();
-            User admin = User.builder()
-                    .name("admin")
-                    .password(passwordEncoder.encode("admin"))
-                    .roles(List.of("ROLE_USER", "ROLE_INVENTORY"))
-                    .build();
+            User user = new User();
+            user.setName("jay");
+            user.setPassword(passwordEncoder.encode("jay"));
+            user.setRoles(List.of("ROLE_USER"));
+
+            User admin = new User();
+            admin.setName("admin");
+            admin.setPassword(passwordEncoder.encode("admin"));
+            admin.setRoles(List.of("ROLE_USER", "ROLE_INVENTORY"));
             Flux.fromIterable(List.of(user, admin))
                     .flatMap(userRepository::save)
                     .blockLast();

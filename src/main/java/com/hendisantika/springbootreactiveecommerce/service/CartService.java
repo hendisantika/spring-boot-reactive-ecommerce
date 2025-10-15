@@ -5,7 +5,6 @@ import com.hendisantika.springbootreactiveecommerce.entity.CartItem;
 import com.hendisantika.springbootreactiveecommerce.entity.Item;
 import com.hendisantika.springbootreactiveecommerce.repository.CartRepository;
 import com.hendisantika.springbootreactiveecommerce.repository.ItemRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
@@ -23,11 +22,15 @@ import reactor.core.publisher.Mono;
  * To change this template use File | Settings | File Templates.
  */
 @Service
-@RequiredArgsConstructor
 public class CartService {
 
     private final ItemRepository itemRepository;
     private final CartRepository cartRepository;
+
+    public CartService(ItemRepository itemRepository, CartRepository cartRepository) {
+        this.itemRepository = itemRepository;
+        this.cartRepository = cartRepository;
+    }
 
     public Flux<Item> getItems() {
         return itemRepository.findAll();

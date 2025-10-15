@@ -1,7 +1,6 @@
 package com.hendisantika.springbootreactiveecommerce.controller;
 
 import com.hendisantika.springbootreactiveecommerce.entity.Item;
-import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,10 +26,13 @@ import static com.hendisantika.springbootreactiveecommerce.constans.MessageConst
  * To change this template use File | Settings | File Templates.
  */
 @RestController
-@RequiredArgsConstructor
 public class AmqpItemController {
 
     private final AmqpTemplate template;
+
+    public AmqpItemController(AmqpTemplate template) {
+        this.template = template;
+    }
 
     @PreAuthorize("hasRole('INVENTORY')")
     @PostMapping("/amqp/items/add")
