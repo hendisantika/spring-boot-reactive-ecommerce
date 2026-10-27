@@ -2,7 +2,9 @@ package com.hendisantika.springbootreactiveecommerce.repository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import com.hendisantika.springbootreactiveecommerce.TestcontainersConfiguration;
+import org.springframework.boot.data.mongodb.test.autoconfigure.DataMongoTest;
+import org.springframework.context.annotation.Import;
 import reactor.test.StepVerifier;
 
 /**
@@ -15,7 +17,8 @@ import reactor.test.StepVerifier;
  * Time: 06:49
  * To change this template use File | Settings | File Templates.
  */
-@DataMongoTest(properties = {"spring.mongodb.embedded.version=5.0.15"})
+@DataMongoTest
+@Import(TestcontainersConfiguration.class)
 class ItemRepositoryTest {
 
     @Autowired
