@@ -24,7 +24,7 @@ public class TestcontainersConfiguration {
     static final MongoDBContainer MONGO_DB = new MongoDBContainer(DockerImageName.parse("mongo:9.0.4"))
             .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("container.mongo")));
 
-    static final RabbitMQContainer RABBIT_MQ = new RabbitMQContainer(DockerImageName.parse("rabbitmq:4-management-alpine"));
+    static final RabbitMQContainer RABBIT_MQ = new RabbitMQContainer(DockerImageName.parse("rabbitmq:4.4.0-management-alpine"));
 
     static {
         Startables.deepStart(MONGO_DB, RABBIT_MQ).join();
