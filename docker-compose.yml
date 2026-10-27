@@ -10,7 +10,7 @@ services:
     volumes:
       - data:/var/lib/rabbitmq
   mongodb:
-    image: mongo:9.0.2
+    image: mongo:9.0.4
     ports:
       - 27017:27017
     volumes:
