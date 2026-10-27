@@ -1,21 +1,25 @@
 # Spring Boot Reactive E-Commerce
 
-A reactive e-commerce application built with Spring Boot 3.5.6, Spring WebFlux, MongoDB, and RabbitMQ. This project
+[![Java CI with Maven](https://github.com/hendisantika/spring-boot-reactive-ecommerce/actions/workflows/maven.yml/badge.svg)](https://github.com/hendisantika/spring-boot-reactive-ecommerce/actions/workflows/maven.yml)
+![Java](https://img.shields.io/badge/Java-25-orange?logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.2-brightgreen?logo=springboot)
+
+A reactive e-commerce application built with Spring Boot 4.1.2, Spring WebFlux, MongoDB, and RabbitMQ. This project
 demonstrates the implementation of a fully reactive microservice architecture with real-time messaging capabilities.
 
 ## Technologies
 
-- **Java 21** - Programming language
-- **Spring Boot 3.5.6** - Application framework
+- **Java 25** - Programming language (LTS)
+- **Spring Boot 4.1.2** - Application framework
 - **Spring WebFlux** - Reactive web framework
 - **Spring Data MongoDB Reactive** - Reactive MongoDB integration
 - **Spring AMQP** - RabbitMQ integration
-- **Spring Security** - Security and authentication
-- **MongoDB 5.0.15** - NoSQL database
-- **RabbitMQ** - Message broker
+- **Spring Security 7** - Security and authentication
+- **MongoDB** - NoSQL database (5.0.15 via Docker Compose, 8.0 in tests)
+- **RabbitMQ** - Message broker (4.x in tests)
 - **Lombok** - Boilerplate code reduction
-- **Testcontainers** - Integration testing
-- **Maven** - Build tool
+- **Testcontainers 2** - Integration testing with real MongoDB and RabbitMQ
+- **Maven 3.10** (via Maven Wrapper) - Build tool
 
 ## Features
 
@@ -39,9 +43,9 @@ The application follows a layered architecture:
 
 ## Prerequisites
 
-- Java 21 or higher
-- Maven 3.8+
-- Docker and Docker Compose (for MongoDB and RabbitMQ)
+- Java 25 (JDK)
+- Maven 3.9+ (or use the bundled `./mvnw`)
+- Docker and Docker Compose (for MongoDB and RabbitMQ, and for running the tests)
 
 ## Getting Started
 
@@ -175,17 +179,29 @@ spring:
 
 ## Testing
 
-Run unit tests:
+Tests use [Testcontainers](https://testcontainers.com/) to start MongoDB and RabbitMQ automatically, so a running Docker
+daemon is required (no need to start `docker-compose` first). The containers are defined once in
+`TestcontainersConfiguration` and wired into Spring Boot via `@ServiceConnection`.
+
+Run unit tests (surefire):
 
 ```bash
 ./mvnw test
 ```
 
-Run integration tests:
+Run unit and integration tests (`*IT` classes, failsafe):
 
 ```bash
 ./mvnw verify
 ```
+
+## Continuous Integration
+
+- **GitHub Actions** (`.github/workflows/maven.yml`) builds and tests every push and pull request to `main` on
+  Temurin JDK 25 using `./mvnw verify`. Test reports are uploaded when a build fails, and the dependency graph is
+  submitted on pushes to `main`.
+- **Dependabot** (`.github/dependabot.yml`) checks daily for Maven, GitHub Actions and Docker Compose updates. Updates
+  are grouped (Spring Boot, Testcontainers, minor/patch Maven, GitHub Actions) and use conventional commit prefixes.
 
 ## Project Structure
 
@@ -277,7 +293,7 @@ Check RabbitMQ Management Console: http://localhost:15672
 
 1. Verify Java version:
    ```bash
-   java -version  # Should be 21 or higher
+   java -version  # Should be 25
    ```
 
 2. Clean and rebuild:
@@ -294,6 +310,9 @@ Check RabbitMQ Management Console: http://localhost:15672
 - RabbitMQ is used for asynchronous item processing
 - Spring Security provides authentication and role-based authorization
 - Testcontainers are used for integration tests
+- Lombok and the Spring Boot configuration processor are declared as explicit `annotationProcessorPaths`, because
+  JDK 23+ no longer discovers annotation processors on the classpath automatically
+- The RabbitMQ items queue is durable, since RabbitMQ 4 rejects transient non-exclusive queues
 
 ## License
 
@@ -307,7 +326,12 @@ This project is created for educational purposes.
 
 ## Version History
 
-- **0.0.1-SNAPSHOT** - Initial development version
+- **0.0.1-SNAPSHOT** - Current development version
+    - Spring Boot 4.1.2 (Spring Security 7, Jackson 3)
+    - Java 25 support
+    - Testcontainers 2 for MongoDB and RabbitMQ in tests
+    - GitHub Actions CI on JDK 25 and grouped Dependabot updates
+- **Earlier** - Initial development version
     - Spring Boot 3.5.6
     - Java 21 support
     - Reactive MongoDB and WebFlux

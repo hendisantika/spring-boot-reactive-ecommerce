@@ -4,8 +4,9 @@ import com.hendisantika.springbootreactiveecommerce.entity.Item;
 import com.hendisantika.springbootreactiveecommerce.repository.ItemRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Example;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -21,7 +22,8 @@ import reactor.test.StepVerifier;
  * Time: 06:48
  * To change this template use File | Settings | File Templates.
  */
-@SpringBootTest(properties = {"spring.mongodb.embedded.version=5.0.15"})
+@SpringBootTest
+@Import(TestcontainersConfiguration.class)
 @AutoConfigureWebTestClient
 public class SecurityIT {
 

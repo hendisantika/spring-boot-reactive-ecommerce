@@ -5,40 +5,29 @@ import com.hendisantika.springbootreactiveecommerce.repository.ItemRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.testcontainers.containers.RabbitMQContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.awaitility.Awaitility;
 import reactor.test.StepVerifier;
+
+import java.time.Duration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-@SpringBootTest(properties = {"spring.mongodb.embedded.version=5.0.15"})
+@SpringBootTest
+@Import(TestcontainersConfiguration.class)
 @AutoConfigureWebTestClient
-@Testcontainers
 class SpringBootReactiveEcommerceApplicationTests {
-
-
-    @Container
-    static RabbitMQContainer rabbitContainer = new RabbitMQContainer("rabbitmq:3.7.25-management-alpine");
 
     @Autowired
     WebTestClient client;
 
     @Autowired
     ItemRepository itemRepository;
-
-    @DynamicPropertySource
-    static void configure(DynamicPropertyRegistry registry) {
-        registry.add("spring.rabbitmq.host", rabbitContainer::getHost);
-        registry.add("spring.rabbitmq.port", rabbitContainer::getAmqpPort);
-    }
 
     @BeforeEach
     void setUp() {
@@ -57,13 +46,14 @@ class SpringBootReactiveEcommerceApplicationTests {
                 .expectStatus().isCreated()
                 .expectBody();
 
-        itemRepository.findAll()
+        // the item is persisted asynchronously by the RabbitMQ listener
+        Awaitility.await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> itemRepository.findAll()
                 .as(StepVerifier::create)
                 .assertNext(item -> {
                     assertThat(item.getPrice(), equalTo(1999.98));
                     assertThat(item.getName(), equalTo("Desktop"));
                 })
-                .verifyComplete();
+                .verifyComplete());
     }
 
 }
