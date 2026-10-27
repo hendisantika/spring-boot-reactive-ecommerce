@@ -1,8 +1,10 @@
 package com.hendisantika.springbootreactiveecommerce;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.lifecycle.Startables;
 import org.testcontainers.mongodb.MongoDBContainer;
 import org.testcontainers.rabbitmq.RabbitMQContainer;
@@ -17,7 +19,10 @@ import org.testcontainers.utility.DockerImageName;
 @TestConfiguration(proxyBeanMethods = false)
 public class TestcontainersConfiguration {
 
-    static final MongoDBContainer MONGO_DB = new MongoDBContainer(DockerImageName.parse("mongo:8.0"));
+    // MongoDB 8.0 refuses to start on Linux kernels 6.19-7.0.13 (SERVER-121912), which some CI runners use.
+    // mongod output is streamed into the test log so container crashes are visible on CI.
+    static final MongoDBContainer MONGO_DB = new MongoDBContainer(DockerImageName.parse("mongo:9.0.4"))
+            .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("container.mongo")));
 
     static final RabbitMQContainer RABBIT_MQ = new RabbitMQContainer(DockerImageName.parse("rabbitmq:4-management-alpine"));
 
