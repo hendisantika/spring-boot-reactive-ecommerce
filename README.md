@@ -15,8 +15,8 @@ demonstrates the implementation of a fully reactive microservice architecture wi
 - **Spring Data MongoDB Reactive** - Reactive MongoDB integration
 - **Spring AMQP** - RabbitMQ integration
 - **Spring Security 7** - Security and authentication
-- **MongoDB** - NoSQL database (5.0.15 via Docker Compose, 8.0 in tests)
-- **RabbitMQ** - Message broker (4.x in tests)
+- **MongoDB 9.0.4** - NoSQL database
+- **RabbitMQ 4.4.0** - Message broker
 - **Lombok** - Boilerplate code reduction
 - **Testcontainers 2** - Integration testing with real MongoDB and RabbitMQ
 - **Maven 3.10** (via Maven Wrapper) - Build tool
@@ -59,9 +59,21 @@ docker-compose up -d
 
 This will start:
 
-- **MongoDB** on port 27017 (credentials: citizix/S3cret)
-- **RabbitMQ** on port 5672
+- **MongoDB** (`mongo:9.0.4`) on port 27017 (credentials: citizix/S3cret)
+- **RabbitMQ** (`rabbitmq:4.4.0-management`) on port 5672
 - **RabbitMQ Management Console** on port 15672 (http://localhost:15672, guest/guest)
+
+### Pinned Versions
+
+Image versions are pinned so local and test environments match:
+
+| Service  | Docker Compose (`docker-compose.yml`) | Tests (`TestcontainersConfiguration`) |
+|----------|---------------------------------------|---------------------------------------|
+| MongoDB  | `mongo:9.0.4`                         | `mongo:9.0.4`                         |
+| RabbitMQ | `rabbitmq:4.4.0-management`           | `rabbitmq:4.4.0-management-alpine`    |
+
+Dependabot updates the images in `docker-compose.yml`, but not the ones in `TestcontainersConfiguration`. When it bumps
+a Compose image, update the matching test image by hand.
 
 ### 2. Build the Application
 
@@ -172,9 +184,8 @@ If you need to customize MongoDB connection, add to `application.yml`:
 
 ```yaml
 spring:
-  data:
-    mongodb:
-      uri: mongodb://citizix:S3cret@localhost:27017/ecommerce?authSource=admin
+  mongodb:
+    uri: mongodb://citizix:S3cret@localhost:27017/ecommerce?authSource=admin
 ```
 
 ## Testing
@@ -313,6 +324,8 @@ Check RabbitMQ Management Console: http://localhost:15672
 - Lombok and the Spring Boot configuration processor are declared as explicit `annotationProcessorPaths`, because
   JDK 23+ no longer discovers annotation processors on the classpath automatically
 - The RabbitMQ items queue is durable, since RabbitMQ 4 rejects transient non-exclusive queues
+- Tests use MongoDB 9.0, not 8.0: MongoDB 8.0 refuses to start on Linux kernels 6.19 through 7.0.13
+  ([SERVER-121912](https://jira.mongodb.org/browse/SERVER-121912)), which some GitHub Actions runners use
 
 ## License
 
@@ -330,6 +343,7 @@ This project is created for educational purposes.
     - Spring Boot 4.1.2 (Spring Security 7, Jackson 3)
     - Java 25 support
     - Testcontainers 2 for MongoDB and RabbitMQ in tests
+    - MongoDB 9.0.4 and RabbitMQ 4.4.0 pinned in Docker Compose and tests
     - GitHub Actions CI on JDK 25 and grouped Dependabot updates
 - **Earlier** - Initial development version
     - Spring Boot 3.5.6
