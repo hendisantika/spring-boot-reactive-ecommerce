@@ -2,6 +2,7 @@ package com.hendisantika.springbootreactiveecommerce;
 
 import com.hendisantika.springbootreactiveecommerce.entity.Item;
 import com.hendisantika.springbootreactiveecommerce.repository.ItemRepository;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
@@ -11,6 +12,8 @@ import org.springframework.data.domain.Example;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.test.StepVerifier;
+
+import java.time.Duration;
 
 /**
  * Created by IntelliJ IDEA.
@@ -55,9 +58,10 @@ public class SecurityIT {
                 .expectStatus()
                 .isCreated();
 
-        itemRepository.findAll(Example.of(item))
+        // the item is persisted asynchronously by the RabbitMQ listener
+        Awaitility.await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> itemRepository.findAll(Example.of(item))
                 .as(StepVerifier::create)
                 .expectNextCount(1)
-                .verifyComplete();
+                .verifyComplete());
     }
 }
