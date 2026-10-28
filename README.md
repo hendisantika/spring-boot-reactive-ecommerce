@@ -67,13 +67,14 @@ This will start:
 
 Image versions are pinned so local and test environments match:
 
-| Service  | Docker Compose (`docker-compose.yml`) | Tests (`TestcontainersConfiguration`) |
-|----------|---------------------------------------|---------------------------------------|
-| MongoDB  | `mongo:9.0.4`                         | `mongo:9.0.4`                         |
-| RabbitMQ | `rabbitmq:4.4.0-management`           | `rabbitmq:4.4.0-management-alpine`    |
+| Service  | Docker Compose (`docker-compose.yml`) | Tests (`src/test/resources/testcontainers/`) |
+|----------|---------------------------------------|----------------------------------------------|
+| MongoDB  | `mongo:9.0.4`                         | `mongo:9.0.4` (`mongo.Dockerfile`)           |
+| RabbitMQ | `rabbitmq:4.4.0-management`           | `rabbitmq:4.4.0-management-alpine` (`rabbitmq.Dockerfile`) |
 
-Dependabot updates the images in `docker-compose.yml`, but not the ones in `TestcontainersConfiguration`. When it bumps
-a Compose image, update the matching test image by hand.
+Dependabot updates both: the Compose images directly, and the test images through the `FROM` line of each one-line
+Dockerfile, which `TestcontainersConfiguration` reads at startup. Compose and test bumps arrive as separate PRs, so
+merge both to keep the versions in step.
 
 ### 2. Build the Application
 
@@ -192,7 +193,8 @@ spring:
 
 Tests use [Testcontainers](https://testcontainers.com/) to start MongoDB and RabbitMQ automatically, so a running Docker
 daemon is required (no need to start `docker-compose` first). The containers are defined once in
-`TestcontainersConfiguration` and wired into Spring Boot via `@ServiceConnection`.
+`TestcontainersConfiguration` and wired into Spring Boot via `@ServiceConnection`. Their image versions come from the
+Dockerfiles in `src/test/resources/testcontainers/`.
 
 Run unit tests (surefire):
 
@@ -211,8 +213,9 @@ Run unit and integration tests (`*IT` classes, failsafe):
 - **GitHub Actions** (`.github/workflows/maven.yml`) builds and tests every push and pull request to `main` on
   Temurin JDK 25 using `./mvnw verify`. Test reports are uploaded when a build fails, and the dependency graph is
   submitted on pushes to `main`.
-- **Dependabot** (`.github/dependabot.yml`) checks daily for Maven, GitHub Actions and Docker Compose updates. Updates
-  are grouped (Spring Boot, Testcontainers, minor/patch Maven, GitHub Actions) and use conventional commit prefixes.
+- **Dependabot** (`.github/dependabot.yml`) checks daily for Maven, GitHub Actions, Docker Compose and Testcontainers
+  image updates. Updates are grouped (Spring Boot, Testcontainers, minor/patch Maven, GitHub Actions, Testcontainers
+  images) and use conventional commit prefixes.
 
 ## Project Structure
 
